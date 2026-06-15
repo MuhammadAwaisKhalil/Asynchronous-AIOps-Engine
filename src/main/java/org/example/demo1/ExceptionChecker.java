@@ -23,22 +23,23 @@ public class ExceptionChecker {
             String randomError = generateTestFailure(random.nextInt(3));
             System.out.println("Error caught\n"+randomError);
             giveErrorToAI(i,randomError);
+
+            try{
+                Thread.sleep(5000);
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
-    private static String generateTestFailure(int errorType){
-        switch(errorType){
+    private static String generateTestFailure(int errorType) {
+        switch (errorType) {
             case 0:
-                // A messy database log that doesn't use standard template phrasing
                 return "Error: DB pool connection dropped during multi-row batch update. Lock clearance failed.";
-
             case 1:
-                // A security log completely missing typical words like 'WAF' or 'Warning'
                 return "Alert: Client signature validation failed on public gateway endpoint. Terminating session footprint.";
-
             case 2:
-                // A resource log using entirely different terminology
                 return "System Warning: Core execution environment memory buffer has reached maximum capacity ceiling.";
-
             default:
                 return "System configuration warning: localized latency detected.";
         }
@@ -71,7 +72,7 @@ public class ExceptionChecker {
 
             String jsonFormat = String.format("{\"logID\":%d, \"logText\":\"%s\"}",logID,cleandLog);
 
-            HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
+            HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(PYTHON_AI_URL))
                     .header("Content-Type","application/json")
@@ -80,10 +81,22 @@ public class ExceptionChecker {
 
             System.out.println("Sending packet to AI model");
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//
+//            String aiDecision = response.body().trim();
+//            handleAIResopnse(aiDecision);
+            // Sending an Asynch call to the python server that predicts error type and logs the error
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(aiResponse->{
+                        String response = aiResponse.trim();
+                        handleAIResopnse(response);
+                    }).exceptionally(e->{
+                        System.out.println("Error in asynchronous data exchange from here to python server");
+                        return null;
+                    });
 
-            String aiDecision = response.body().trim();
-            handleAIResopnse(aiDecision);
+
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
