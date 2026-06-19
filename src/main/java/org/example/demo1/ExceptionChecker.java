@@ -12,7 +12,7 @@ public class ExceptionChecker {
     public static void main(String[] args){
         Random random = new Random();
 
-        for(int i=0;i<=4;i++){
+        for(int i=0;i<=6;i++){
             try{
                 Thread.sleep(2000);
 
@@ -34,29 +34,29 @@ public class ExceptionChecker {
     }
     private static String generateTestFailure(int errorType) {
         switch (errorType) {
-            // === DATABASE_DEADLOCK VARIATIONS ===
+            // === DATABASE_DEADLOCK VARIATIONS (Label 0) ===
             case 0:
-                return "Transaction rolled back. Process ID 54 was victimized by another concurrent thread trying to acquire row-level persistence locks.";
+                return "SQL engine halted: Process victimized by deadlock monitor. Thread was waiting to acquire row-level lock held by another session.";
             case 1:
-                return "Severe: SQL Server aborted execution path. Shared lock contention on index table metadata prevented commit operations.";
+                return "Transaction aborted: Mutex acquisition timed out during bulk update. Multiple workers blocked by intersecting foreign keys.";
             case 2:
-                return "Error code 1205: Execution graph cyclic dependency detected during parallel batch ingestion. Session closed by coordinator.";
+                return "Database cyclic dependency warning: Execution graph stalled. Coordinator rolling back transaction due to shared lock contention.";
 
-            // === SECURITY_AUTH_BREACH VARIATIONS ===
+            // === SECURITY_AUTH_BREACH VARIATIONS (Label 1) ===
             case 3:
-                return "Anomalous activity: Token decoding failed repeatedly from inbound source. Gateway dropped corrupt authorization payload.";
+                return "Gateway security drop: Malformed JWT payload detected. Cryptographic signature does not match the active environment key.";
             case 4:
-                return "Security violation: Access denied for administrator scope. Unrecognized machine fingerprint attempted high-privilege query.";
+                return "Intrusion detection tripped: Unrecognized machine fingerprint attempted rapid sequential access. Rate limit enforced.";
             case 5:
-                return "Request dropped. Inbound payload signature does not match expected cryptographic hash rules for public traffic.";
+                return "WAF alert: Inbound request blocked. Potential injection payload sanitized before reaching the authentication layer.";
 
-            // === RESOURCE_EXHAUSTION VARIATIONS ===
+            // === RESOURCE_EXHAUSTION VARIATIONS (Label 2) ===
             case 6:
-                return "OutOfMemoryError imminent: Direct byte buffer allocations have surpassed the specified boundary thresholds allocation limits.";
+                return "System halt imminent: OS refused memory allocation. Virtual machine heap hovering at maximum allocation ceiling.";
             case 7:
-                return "Performance degradation: Thread worker pool is completely saturated. 0 available executors remaining in application context.";
+                return "Connection pool drained: HikariPool-1 has 0 active connections remaining. Request timed out waiting for resource clearance.";
             case 8:
-                return "System Halt: Virtual machine heap usage hovering at 99.4% allocation ceiling. Garbage collector invocation yielding 0 bytes reclaimed.";
+                return "OS boundary reached: File descriptor limit exceeded. The kernel refused to allocate further socket connections to the process.";
 
             default:
                 return "System info: Standard heartbeat ping acknowledged successfully.";
