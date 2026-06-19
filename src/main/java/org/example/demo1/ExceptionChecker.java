@@ -7,7 +7,7 @@ import java.util.*;
 import java.net.*;
 public class ExceptionChecker {
 
-    private static final String PYTHON_AI_URL = "http://127.0.0.1:5000/telemetry";
+    private static final String PYTHON_AI_URL = "http://127.0.0.1:8080/telemetry";
 
     public static void main(String[] args){
         Random random = new Random();
@@ -20,7 +20,7 @@ public class ExceptionChecker {
                 System.out.println(e.getMessage());
             }
 
-            String randomError = generateTestFailure(random.nextInt(3));
+            String randomError = generateTestFailure(random.nextInt(9));
             System.out.println("Error caught\n"+randomError);
             giveErrorToAI(i,randomError);
 
@@ -34,14 +34,32 @@ public class ExceptionChecker {
     }
     private static String generateTestFailure(int errorType) {
         switch (errorType) {
+            // === DATABASE_DEADLOCK VARIATIONS ===
             case 0:
-                return "Error: DB pool connection dropped during multi-row batch update. Lock clearance failed.";
+                return "Transaction rolled back. Process ID 54 was victimized by another concurrent thread trying to acquire row-level persistence locks.";
             case 1:
-                return "Alert: Client signature validation failed on public gateway endpoint. Terminating session footprint.";
+                return "Severe: SQL Server aborted execution path. Shared lock contention on index table metadata prevented commit operations.";
             case 2:
-                return "System Warning: Core execution environment memory buffer has reached maximum capacity ceiling.";
+                return "Error code 1205: Execution graph cyclic dependency detected during parallel batch ingestion. Session closed by coordinator.";
+
+            // === SECURITY_AUTH_BREACH VARIATIONS ===
+            case 3:
+                return "Anomalous activity: Token decoding failed repeatedly from inbound source. Gateway dropped corrupt authorization payload.";
+            case 4:
+                return "Security violation: Access denied for administrator scope. Unrecognized machine fingerprint attempted high-privilege query.";
+            case 5:
+                return "Request dropped. Inbound payload signature does not match expected cryptographic hash rules for public traffic.";
+
+            // === RESOURCE_EXHAUSTION VARIATIONS ===
+            case 6:
+                return "OutOfMemoryError imminent: Direct byte buffer allocations have surpassed the specified boundary thresholds allocation limits.";
+            case 7:
+                return "Performance degradation: Thread worker pool is completely saturated. 0 available executors remaining in application context.";
+            case 8:
+                return "System Halt: Virtual machine heap usage hovering at 99.4% allocation ceiling. Garbage collector invocation yielding 0 bytes reclaimed.";
+
             default:
-                return "System configuration warning: localized latency detected.";
+                return "System info: Standard heartbeat ping acknowledged successfully.";
         }
     }
     private static void handleAIResopnse(String AIresponse){
