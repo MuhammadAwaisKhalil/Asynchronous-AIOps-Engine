@@ -28,7 +28,13 @@ db_templates = [
     "Internal database pool resource failure: query execution aborted waiting for lock clearance.",
     "Fatal storage engine error: transaction clearance timed out due to high index contention.",
     "Database driver dropped connection: socket timeout during extensive read/write block on {node}.",
-    "Hibernate transaction coordinator failed to flush batch update to backend data store repository."
+    "Hibernate transaction coordinator failed to flush batch update to backend data store repository.",
+    "Fatal: Thread-pool exhaustion due to circular wait condition. Multiple workers are stuck waiting on the same entity monitor.",
+    "Connection timeout: Mutex acquisition failed after 30000ms. Process holding write-intent lock.",
+    "ORM Exception: Hibernate session flushed but commit was blocked by intersecting foreign keys.",
+    "Error code 1205: Execution graph cyclic dependency detected during parallel batch ingestion.",
+    "Transaction rolled back. Process victimized by concurrent thread trying to acquire row-level locks.",
+    "Severe: SQL Server aborted execution path. Shared lock contention on index table metadata prevented commit operations."
 ]
 
 
@@ -47,7 +53,13 @@ security_templates = [
     "Intrusion Detection System triggered: anomalous automated scanning sequence originating from client remote socket.",
     "JSON Web Token parsing dropped: invalid cryptographic payload or forged context footprint signature.",
     "Privilege escalation vector neutralized: account user_{id} attempted executing forbidden administrative tasks.",
-    "Security firewall blocked inbound transport layer packet matching known cross-site scripting signatures."
+    "Security firewall blocked inbound transport layer packet matching known cross-site scripting signatures.",
+    "Warning: Malformed JWT structure detected. Cryptographic verification of token header failed.",
+    "Edge Router Alert: Suspicious traffic spike detected. Rate limit exceeded from foreign subnet.",
+    "WAF Triggered: Potential Cross-Site Scripting (XSS) payload sanitized at the API gateway.",
+    "Security violation: Access denied for administrator scope. Unrecognized machine fingerprint.",
+    "Request dropped. Inbound payload signature does not match expected cryptographic hash rules.",
+    "Anomalous activity: Token decoding failed repeatedly from inbound source. Gateway dropped corrupt authorization payload."
 ]
 
 
@@ -67,8 +79,17 @@ resource_templates = [
     "System execution halted: execution context memory heap allocator reached absolute system physical boundary.",
     "Host compute layer non-responsive: IO bottleneck saturation detected on core operating system disk scheduler.",
     "JVM processing threshold broken: garbage collector running continuously, stalling master cluster node processing loop.",
-    "Container environment terminated: operating system low memory subsystem triggered active kernel out-of-memory killer."
+    "Container environment terminated: operating system low memory subsystem triggered active kernel out-of-memory killer.",
+    "OS Error: File descriptor limit reached. The operating system refused to open any more socket connections for this process.",
+    "Critical: CPU thermal throttling initiated. Background processing queues are backing up.",
+    "HikariPool-1 - Connection is not available, request timed out after 30004ms. Maximum pool size reached.",
+    "OutOfMemoryError imminent: Direct byte buffer allocations have surpassed the specified boundary thresholds.",
+    "System Halt: Virtual machine heap usage hovering at 99.4% allocation ceiling. Garbage collector yielding 0 bytes.",
+    "Memory allocation refused by the OS. Swap space limit reached.",
+    "Performance degradation: Thread worker pool is completely saturated. 0 available executors remaining in application context."
 ]
+
+
 def format_log(template):
     return template.format(
         table=random.choice(tables),
@@ -95,7 +116,7 @@ for _ in range(250):
 
 
 print(f"Dataset successfully built! Total logs: {len(training_logs)}")
-VOCAB_SIZE=300
+VOCAB_SIZE=325
 MAX_LEN = 25
 
 
@@ -126,7 +147,7 @@ model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accurac
 
 
 
-model.fit(x_train,y_train,epochs=40,batch_size=32, verbose=1)
+model.fit(x_train,y_train,epochs=30,batch_size=32, verbose=1)
 
 model.save("log_classifier_model.keras")
 print("\n[SUCCESS] Model successfully compiled and saved as log_classifier_model.keras")
